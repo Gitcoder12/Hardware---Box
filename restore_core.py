@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import hashlib
 import io
+import os
+import shlex
 import shutil
 import sys
 import tarfile
@@ -42,6 +44,8 @@ def extract_safely(data: bytes, destination: Path) -> None:
 
 
 def main() -> int:
+    if len(sys.argv) > 2:
+        raise SystemExit("Usage: python restore_core.py [destination]")
     parts = sorted((ROOT / "source" / "parts").glob("*.bin"))
     if len(parts) != 14:
         raise SystemExit(f"Expected 14 source fragments, found {len(parts)}.")
@@ -49,16 +53,20 @@ def main() -> int:
     actual = hashlib.sha256(archive).hexdigest()
     if actual != EXPECTED_SHA256:
         raise SystemExit(f"SHA-256 mismatch: {actual}")
-    destination = Path(sys.argv[1]).expanduser() if len(sys.argv) > 1 else ROOT / "core-source"
-    destination = destination.resolve()
-    if destination == ROOT or ROOT in destination.parents:
-        raise SystemExit("Choose an extraction directory outside the repository.")
-    if destination.exists():
+
+    requested = Path(sys.argv[1]).expanduser() if len(sys.argv) > 1 else ROOT / "core-source"
+    destination = Path(os.path.abspath(requested))
+    if destination == ROOT or destination in ROOT.parents:
+        raise SystemExit("Choose an extraction directory, not the repository root or one of its parents.")
+    if destination.is_symlink():
+        destination.unlink()
+    elif destination.exists():
         shutil.rmtree(destination)
     extract_safely(archive, destination)
+
     print(f"Hardware-Box v1.2.0 restored to: {destination}")
     print(f"SHA-256 verified: {actual}")
-    print("Install with: python -m pip install -e 'core-source[dev]'")
+    print(f"Install with: python -m pip install -e {shlex.quote(str(destination) + '[dev]')}")
     return 0
 
 
