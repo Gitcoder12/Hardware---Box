@@ -1,30 +1,38 @@
-# 🔧 Hardware-Box
+# Hardware-Box
 
-**An open-source toolkit for documenting, analyzing, and reconstructing hardware.**
+A practical, open-source workbench for inspecting hardware records and engineering files.
 
-[![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
-![Status: Early Development](https://img.shields.io/badge/Status-Early_Development-orange.svg)
+[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
+[![Python](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/)
+[![Streamlit](https://img.shields.io/badge/app-Streamlit-ff4b4b.svg)](https://streamlit.io/)
 
-Hardware-Box aims to make physical designs easier to understand, verify, modify, and reproduce responsibly.
+## Workspaces
 
-## Focus Areas
-- **Hardware Registry:** Devices, configurations, components, and provenance.
-- **PCB Intelligence:** KiCad schematics, layouts, and bills of materials.
-- **CAD Inspection:** STL, 3MF, and STEP models.
-- **Design Analysis:** Interfaces, compatibility, and dimensional tolerances.
-- **Manufacturing:** Materials, fabrication processes, and assembly records.
+- **Device records** — validate structured JSON device records.
+- **Tolerance & fit** — calculate worst-case and RSS stacks; classify hole/shaft fits.
+- **STL inspection** — inspect triangle count, bounds and degenerate facets.
+- **KiCad BOM** — review component rows, duplicate references and missing values.
+- **Project integrity** — scan ZIP paths and calculate an archive SHA-256 digest.
 
-## Technology
-Python · JSON · SQLite · KiCad · FreeCAD
+The app is read-only. Uploaded files are processed in memory and are not saved by the application. Engineering estimates are advisory and do not replace CAD validation, simulation, ERC/DRC or manufacturing sign-off.
 
-## Project Status
-Early development. This repository currently contains the project foundation and documentation. Source modules, sample designs, and automated tests will be published as they are ready.
+## Run locally
 
-## Responsible Use
-Work only with hardware you are authorized to inspect or reproduce. Respect safety requirements, intellectual property, and asset licenses.
+```bash
+python -m venv .venv
+# Windows: .venv\Scripts\activate
+# macOS / Linux: source .venv/bin/activate
+pip install -r requirements.txt
+streamlit run streamlit_app.py
+```
+
+## Deploy a public demo
+
+1. Open [Streamlit Community Cloud](https://share.streamlit.io/).
+2. Select **New app** and connect `Gitcoder12/Hardware-Box`.
+3. Choose branch `main` and file `streamlit_app.py`.
+4. Deploy. Streamlit will assign the public `*.streamlit.app` URL.
 
 ## License
-Software: Apache-2.0. Hardware designs and third-party assets may have separate licenses.
 
----
-**Document. Analyze. Reconstruct. Replicate. Manufacture.**
+Apache-2.0. See [LICENSE](LICENSE).

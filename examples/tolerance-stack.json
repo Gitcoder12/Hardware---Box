@@ -1,0 +1,19 @@
+{
+  "dimensions": [
+    {
+      "name": "A",
+      "nominal": 20,
+      "tolerance": 0.1
+    },
+    {
+      "name": "B",
+      "nominal": 10,
+      "tolerance": 0.05
+    },
+    {
+      "name": "C",
+      "nominal": 5,
+      "tolerance": 0.02
+    }
+  ]
+}
