@@ -1,37 +1,62 @@
 # Hardware-Box
 
-A practical open-source workbench for inspecting hardware records and engineering files.
+An open-source workbench for inspecting hardware records, CAD meshes, PCB designs and engineering tolerances.
 
-[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
-[![Python](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/)
-[![Streamlit](https://img.shields.io/badge/app-Streamlit-ff4b4b.svg)](https://streamlit.io/)
+[![License: Apache-2.0](https://img.shields.io/badge/License-Apache--2.0-blue.svg)](LICENSE)
+[![Python](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/)
+[![CI](https://github.com/Gitcoder12/Hardware-Box/actions/workflows/tests.yml/badge.svg)](https://github.com/Gitcoder12/Hardware-Box/actions/workflows/tests.yml)
 
 ## Workspaces
 
-- **Device records** — validate structured JSON device records.
-- **Tolerance & fit** — calculate worst-case and RSS stacks; classify hole/shaft fits.
-- **STL inspection** — inspect triangle count, mesh bounds and degenerate facets.
-- **KiCad BOM** — review component rows, duplicate references and missing values.
-- **Project integrity** — scan ZIP paths and calculate an archive SHA-256 digest.
+- Device registry, validation and design-readiness review
+- STL / 3MF mesh inspection
+- Worst-case and RSS tolerance stacks; hole / shaft fits
+- Native KiCad schematic, PCB, BOM and netlist inspection
+- ERC / DRC report review
+- Project-bundle integrity verification
 
-The app is read-only. Uploaded files are processed in memory and are not saved by the application. Engineering estimates are advisory and do not replace CAD validation, simulation, ERC/DRC or manufacturing sign-off.
+The app performs read-only analysis. Results are advisory and do not replace CAD-kernel validation, simulation, ERC/DRC or manufacturing sign-off.
 
-## Run locally
+## Run the app
 
 ```bash
 python -m venv .venv
-# Windows: .venv\Scripts\activate
+# Windows: .venv\\Scripts\\activate
 # macOS / Linux: source .venv/bin/activate
 pip install -r requirements.txt
 streamlit run streamlit_app.py
 ```
 
+## Install the Python toolkit
+
+```bash
+pip install -e .
+hardware-box --help
+```
+
+## Run tests
+
+```bash
+pip install -e ".[dev]"
+pytest tests/ -q
+```
+
+## Project layout
+
+```text
+Hardware-Box/
+├── src/hardware_box/    # Python core and CLI
+├── tests/               # 21 automated test modules
+├── streamlit_app.py     # Streamlit Cloud entry point
+├── examples/            # Sample hardware and engineering files
+├── database/            # Device schemas and records
+├── docs/                # Architecture and engineering notes
+└── .github/workflows/   # CI and app smoke checks
+```
+
 ## Deploy a public demo
 
-1. Open [Streamlit Community Cloud](https://share.streamlit.io/).
-2. Select **New app** and connect `Gitcoder12/Hardware-Box`.
-3. Choose branch `main` and file path `streamlit_app.py`.
-4. Deploy. Streamlit will assign the public `*.streamlit.app` URL.
+On [Streamlit Community Cloud](https://share.streamlit.io/), create an app using repository `Gitcoder12/Hardware-Box`, branch `main`, and entry point `streamlit_app.py`. The public URL is generated after deployment.
 
 ## License
 

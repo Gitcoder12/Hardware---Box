@@ -1,0 +1,5 @@
+{
+  "default_unit": "mm",
+  "hole": {"nominal": 10.10, "tolerance_plus": 0.02, "tolerance_minus": 0.02},
+  "shaft": {"nominal": 10.00, "tolerance_plus": 0.01, "tolerance_minus": 0.01}
+}

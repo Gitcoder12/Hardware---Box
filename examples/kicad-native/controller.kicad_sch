@@ -1,0 +1,42 @@
+(kicad_sch
+  (version 20250114)
+  (generator "eeschema")
+  (generator_version "9.0")
+  (uuid "11111111-1111-4111-8111-111111111111")
+  (paper "A4")
+  (lib_symbols
+    (symbol "Device:R" (property "Reference" "R") (property "Value" "R"))
+    (symbol "Device:C" (property "Reference" "C") (property "Value" "C"))
+    (symbol "MCU_Generic:MCU" (property "Reference" "U") (property "Value" "MCU"))
+  )
+  (wire (pts (xy 50 50) (xy 70 50)) (stroke (width 0) (type default)) (uuid "22222222-2222-4222-8222-222222222222"))
+  (junction (at 60 50) (diameter 0) (color 0 0 0 0) (uuid "33333333-3333-4333-8333-333333333333"))
+  (label "UART_TX" (at 70 50 0) (effects (font (size 1.27 1.27))))
+  (global_label "GND" (shape input) (at 50 70 0) (effects (font (size 1.27 1.27))))
+  (symbol
+    (lib_id "Device:R") (at 70 60 90) (unit 1)
+    (property "Reference" "R1" (at 70 57 90) (effects (font (size 1.27 1.27))))
+    (property "Value" "10k" (at 70 63 90) (effects (font (size 1.27 1.27))))
+    (in_bom yes) (on_board yes) (dnp no)
+    (instances (project "Controller"
+      (path "/11111111-1111-4111-8111-111111111111" (reference "R1") (unit 1))))
+  )
+  (symbol
+    (lib_id "Device:C") (at 90 60 90) (unit 1)
+    (property "Reference" "C1" (at 90 57 90) (effects (font (size 1.27 1.27))))
+    (property "Value" "100nF" (at 90 63 90) (effects (font (size 1.27 1.27))))
+    (in_bom yes) (on_board yes) (dnp no)
+    (instances (project "Controller"
+      (path "/11111111-1111-4111-8111-111111111111" (reference "C1") (unit 1))))
+  )
+  (symbol
+    (lib_id "MCU_Generic:MCU") (at 120 60 0) (unit 1)
+    (property "Reference" "U1" (at 120 50 0) (effects (font (size 1.27 1.27))))
+    (property "Value" "MCU" (at 120 70 0) (effects (font (size 1.27 1.27))))
+    (in_bom yes) (on_board yes) (dnp no)
+    (instances (project "Controller"
+      (path "/11111111-1111-4111-8111-111111111111" (reference "U1") (unit 1))))
+  )
+  (no_connect (at 130 80) (uuid "44444444-4444-4444-8444-444444444444"))
+  (sheet_instances (path "/" (page "1")))
+)

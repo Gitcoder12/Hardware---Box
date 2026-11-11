@@ -1,0 +1,4 @@
+References,Value,Footprint,Datasheet,MPN,Manufacturer
+R1,10k,Resistor_SMD:R_0603,https://example.invalid/resistor,EX-RES-10K,Example Passive
+C1,100nF,Capacitor_SMD:C_0603,https://example.invalid/capacitor,EX-CAP-100N,Example Passive
+U1,MCU,Package_QFN:QFN-32,https://example.invalid/mcu,EX-MCU-001,Example Semiconductor

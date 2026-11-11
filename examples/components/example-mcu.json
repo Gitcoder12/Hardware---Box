@@ -1,0 +1,12 @@
+{
+  "mpn": "EX-MCU-001",
+  "manufacturer": "Example Semiconductor",
+  "name": "Illustrative microcontroller",
+  "category": "microcontroller",
+  "package": "QFN-32 (illustrative)",
+  "description": "Synthetic catalog record for demonstrating local component catalog workflows.",
+  "datasheet_url": "https://example.invalid/datasheets/EX-MCU-001.pdf",
+  "lifecycle_status": "unknown",
+  "specifications": {"core": "illustrative 32-bit MCU", "supply_voltage_v": "see actual datasheet"},
+  "provenance": {"source": "Synthetic Hardware-Box example; not a real part", "license": "CC0-1.0"}
+}

@@ -1,0 +1,10 @@
+{
+  "$schema": "https://schemas.kicad.org/erc.v1.json",
+  "source": "sample-schematic.kicad_sch",
+  "date": "2026-01-01T00:00:00Z",
+  "kicad_version": "10.0",
+  "coordinate_units": "mm",
+  "included_severities": ["error", "warning"],
+  "sheets": [{"path": "/", "uuid_path": "root", "violations": []}],
+  "ignored_checks": []
+}

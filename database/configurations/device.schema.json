@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hardware-box.dev/schemas/device-v1.schema.json",
+  "title": "Hardware-Box Device Record v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "name", "category", "manufacturer", "revision", "components", "interfaces", "provenance"],
+  "properties": {
+    "schema_version": {"type": "integer", "const": 1},
+    "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$"},
+    "name": {"type": "string", "minLength": 1},
+    "category": {"type": "string", "enum": ["mobile", "computing", "entertainment", "electronics", "mechanical", "appliances", "other"]},
+    "manufacturer": {"type": "string", "minLength": 1},
+    "revision": {"type": "string", "minLength": 1},
+    "components": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["name", "quantity"], "properties": {
+      "name": {"type": "string", "minLength": 1}, "quantity": {"type": "integer", "minimum": 1},
+      "part_number": {"type": "string"}, "manufacturer": {"type": "string"}, "specifications": {"type": "object"}
+    }}},
+    "interfaces": {"type": "array", "items": {"oneOf": [
+      {"type": "string", "minLength": 1},
+      {"type": "object", "required": ["name"], "additionalProperties": false, "properties": {
+        "name": {"type": "string", "minLength": 1}, "protocol": {"type": "string"}, "connector": {"type": "string"},
+        "pin_count": {"type": "integer", "minimum": 1}, "direction": {"type": "string"},
+        "voltage_min_v": {"type": "number", "minimum": 0}, "voltage_max_v": {"type": "number", "minimum": 0},
+        "current_max_a": {"type": "number", "minimum": 0}, "notes": {"type": "string"}
+      }}
+    ]}},
+    "provenance": {"type": "object", "additionalProperties": false, "required": ["source", "license", "verification"], "properties": {
+      "source": {"type": "string", "minLength": 1}, "license": {"type": "string", "minLength": 1},
+      "verification": {"type": "string", "enum": ["unverified", "documented", "verified"]}
+    }},
+    "electrical": {"type": "object", "properties": {
+      "supply": {"type": "object", "properties": {"voltage_v": {"type": "number", "exclusiveMinimum": 0}, "current_limit_a": {"type": "number", "exclusiveMinimum": 0}}},
+      "loads": {"type": "array", "items": {"type": "object", "properties": {
+        "name": {"type": "string"}, "quantity": {"type": "integer", "minimum": 1}, "current_a": {"type": "number", "minimum": 0},
+        "voltage_min_v": {"type": "number", "minimum": 0}, "voltage_max_v": {"type": "number", "exclusiveMinimum": 0}
+      }}}
+    }},
+    "tags": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "documents": {"type": "array", "items": {"type": "object", "required": ["path"], "properties": {"path": {"type": "string"}, "kind": {"type": "string"}, "revision": {"type": "string"}}}}
+  }
+}

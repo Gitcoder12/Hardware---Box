@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "id": "demo-electrical-controller",
+  "name": "Illustrative 5V Controller Assembly",
+  "category": "electronics",
+  "manufacturer": "Hardware-Box Example Project",
+  "revision": "1.0",
+  "components": [
+    {"name": "Controller module", "quantity": 1, "part_number": "EX-MCU-001", "manufacturer": "Example Semiconductor",
+     "specifications": {"lifecycle_status": "unknown", "suppliers": [], "lead_time_days": 0, "unit_cost": 0, "currency": "USD"}},
+    {"name": "Status indicator", "quantity": 2, "part_number": "EX-LED-RED", "manufacturer": "Example Opto",
+     "specifications": {"lifecycle_status": "unknown"}}
+  ],
+  "interfaces": [
+    {"name": "USB", "protocol": "USB 2.0", "connector": "USB-C", "direction": "bidirectional", "voltage_min_v": 4.75, "voltage_max_v": 5.25},
+    {"name": "UART", "protocol": "UART", "direction": "bidirectional", "voltage_min_v": 3.0, "voltage_max_v": 3.6}
+  ],
+  "electrical": {
+    "supply": {"voltage_v": 5.0, "current_limit_a": 1.0},
+    "loads": [
+      {"name": "controller", "quantity": 1, "current_a": 0.12, "voltage_min_v": 4.75, "voltage_max_v": 5.25},
+      {"name": "indicators", "quantity": 2, "current_a": 0.015, "voltage_min_v": 4.5, "voltage_max_v": 5.5}
+    ]
+  },
+  "tags": ["illustrative", "controller", "electrical-profile"],
+  "documents": [{"path": "docs/example-notes.md", "kind": "design-notes", "revision": "1"}],
+  "provenance": {"source": "Original illustrative Hardware-Box example data", "license": "CC0-1.0", "verification": "unverified"}
+}

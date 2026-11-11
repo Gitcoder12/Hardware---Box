@@ -1,0 +1,17 @@
+{
+  "id": "example-controller",
+  "name": "Example Development Controller",
+  "category": "electronics",
+  "manufacturer": "Community Example",
+  "revision": "1.0",
+  "components": [
+    {"name": "Microcontroller module", "quantity": 1},
+    {"name": "USB connector", "quantity": 1}
+  ],
+  "interfaces": ["USB", "GPIO"],
+  "provenance": {
+    "source": "Illustrative record created for Hardware-Box; not a real product specification",
+    "license": "CC0-1.0",
+    "verification": "unverified"
+  }
+}

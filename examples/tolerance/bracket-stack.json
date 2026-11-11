@@ -1,0 +1,9 @@
+{
+  "name": "Bracket mounting stack",
+  "default_unit": "mm",
+  "dimensions": [
+    {"name": "Left wall", "nominal": 2.0, "tolerance_plus": 0.10, "tolerance_minus": 0.10},
+    {"name": "Gap", "nominal": 18.0, "tolerance_plus": 0.15, "tolerance_minus": 0.15},
+    {"name": "Right wall", "nominal": 2.0, "tolerance_plus": 0.10, "tolerance_minus": 0.10}
+  ]
+}
