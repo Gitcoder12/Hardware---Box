@@ -6,7 +6,6 @@ Hardware-Box is organized as a local-first Python package and a Streamlit interf
 Hardware-Box/
 ├── src/hardware_box/       # Core library and command-line interface
 ├── tests/                  # Automated unit and integration tests
-├── hardware_box_streamlit.py
 ├── streamlit_app.py        # Streamlit Community Cloud entry point
 ├── database/               # Device schema and sample records
 ├── examples/               # Synthetic engineering and KiCad fixtures
