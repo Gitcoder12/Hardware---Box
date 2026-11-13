@@ -39,6 +39,8 @@ def _dimension(item: dict[str, Any], default_unit: str, label: str) -> tuple[flo
         raise ValueError(f"{label}: tolerances must be non-negative")
     if nominal <= 0:
         raise ValueError(f"{label}.nominal must be greater than zero for a physical size")
+    if nominal - minus <= 0:
+        raise ValueError(f"{label} minimum size must remain greater than zero")
     return nominal, plus, minus, coefficient
 
 
