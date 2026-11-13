@@ -60,7 +60,7 @@ mu_C = mu_h − mu_s
 sigma_C = sqrt(sigma_h squared + sigma_s squared)
 P(interference) = Phi(−mu_C / sigma_C)
 
-The zero-variance case is handled deterministically. This model does not constitute full GD&T: datum reference frames, geometric form/position/orientation, material-condition modifiers, thermal effects, surface finish and manufacturing process capability are outside scope.
+The reported configured-k-sigma clearance interval uses the selected sigma multiplier, rather than implying that every result is a three-sigma interval. The zero-variance case is handled deterministically. This model does not constitute full GD&T: datum reference frames, geometric form/position/orientation, material-condition modifiers, thermal effects, surface finish and manufacturing process capability are outside scope.
 
 ## BOM / KiCad cross-check
 
