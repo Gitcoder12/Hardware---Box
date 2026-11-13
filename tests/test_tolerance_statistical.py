@@ -39,3 +39,21 @@ def test_shaft_hole_fit_rejects_negative_or_invalid_dimensions(hole, shaft):
 def test_rejects_invalid_sigma_multiplier():
     with pytest.raises(ValueError):
         analyze_shaft_hole_fit({"nominal": 2}, {"nominal": 1}, sigma_multiplier=0)
+
+def test_rejects_dimension_with_nonpositive_lower_limit():
+    with pytest.raises(ValueError, match="minimum size must remain greater than zero"):
+        analyze_shaft_hole_fit(
+            {"nominal": 1.0, "tolerance_minus": 1.0},
+            {"nominal": 0.5},
+        )
+
+
+def test_statistical_model_reports_asymmetric_tolerance_shift():
+    result = analyze_shaft_hole_fit(
+        {"nominal": 10.0, "tolerance_plus": 0.03, "tolerance_minus": 0.01},
+        {"nominal": 9.9, "tolerance_plus": 0.01, "tolerance_minus": 0.03},
+    )
+    stats = result["statistical"]
+    assert stats["hole_process_mean_mm"] == pytest.approx(10.01)
+    assert stats["shaft_process_mean_mm"] == pytest.approx(9.89)
+    assert stats["clearance_mean_mm"] == pytest.approx(0.12)
