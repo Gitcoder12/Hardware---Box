@@ -120,3 +120,92 @@ def analyze_clearance_fit(hole: dict[str, Any], shaft: dict[str, Any], default_u
         "maximum_clearance_mm": round(max_clearance, 9),
         "assumption": "Ideal size-only cylindrical fit. Does not model form, cylindricity, roughness, temperature, material deformation, coatings, alignment or assembly force.",
     }
+
+
+def analyze_shaft_hole_fit(
+    hole: dict[str, Any],
+    shaft: dict[str, Any],
+    default_unit: str = "mm",
+    *,
+    sigma_multiplier: float = 3.0,
+) -> dict[str, Any]:
+    """Calculate worst-case and statistical shaft/hole clearance.
+
+    The statistical model treats each size as a normal process distribution
+    whose stated asymmetric limit deviations span +/- sigma_multiplier sigma.
+    The center is shifted by half the plus/minus difference. Hole and shaft
+    processes are assumed independent. This is a modeling assumption, not a
+    GD&T conformance certificate.
+    """
+    if (
+        isinstance(sigma_multiplier, bool)
+        or not isinstance(sigma_multiplier, (int, float))
+        or not math.isfinite(float(sigma_multiplier))
+        or sigma_multiplier <= 0
+    ):
+        raise ValueError("sigma_multiplier must be a positive finite number")
+
+    hole_nom, hole_plus, hole_minus, _ = _dimension(hole, default_unit, "hole")
+    shaft_nom, shaft_plus, shaft_minus, _ = _dimension(shaft, default_unit, "shaft")
+
+    hole_min, hole_max = hole_nom - hole_minus, hole_nom + hole_plus
+    shaft_min, shaft_max = shaft_nom - shaft_minus, shaft_nom + shaft_plus
+    worst_min = hole_min - shaft_max
+    worst_max = hole_max - shaft_min
+
+    k = float(sigma_multiplier)
+    hole_mean = hole_nom + (hole_plus - hole_minus) / 2.0
+    shaft_mean = shaft_nom + (shaft_plus - shaft_minus) / 2.0
+    clearance_mean = hole_mean - shaft_mean
+    hole_sigma = (hole_plus + hole_minus) / (2.0 * k)
+    shaft_sigma = (shaft_plus + shaft_minus) / (2.0 * k)
+    clearance_sigma = math.hypot(hole_sigma, shaft_sigma)
+
+    if clearance_sigma == 0.0:
+        probability_interference = 1.0 if clearance_mean < 0 else 0.0
+        probability_clearance = 1.0 - probability_interference
+    else:
+        z = clearance_mean / clearance_sigma
+        probability_interference = 0.5 * math.erfc(z / math.sqrt(2.0))
+        probability_clearance = 1.0 - probability_interference
+
+    if worst_min >= 0:
+        worst_case_fit = "clearance"
+    elif worst_max < 0:
+        worst_case_fit = "interference"
+    else:
+        worst_case_fit = "transition"
+
+    return {
+        "fit_type_worst_case": worst_case_fit,
+        "unit": "mm",
+        "hole_limits_mm": {"minimum": round(hole_min, 9), "maximum": round(hole_max, 9)},
+        "shaft_limits_mm": {"minimum": round(shaft_min, 9), "maximum": round(shaft_max, 9)},
+        "worst_case_clearance_mm": {
+            "minimum": round(worst_min, 9),
+            "maximum": round(worst_max, 9),
+        },
+        "statistical": {
+            "distribution": "normal",
+            "sigma_multiplier": k,
+            "independence_assumption": True,
+            "hole_process_mean_mm": round(hole_mean, 9),
+            "shaft_process_mean_mm": round(shaft_mean, 9),
+            "clearance_mean_mm": round(clearance_mean, 9),
+            "hole_sigma_mm": round(hole_sigma, 9),
+            "shaft_sigma_mm": round(shaft_sigma, 9),
+            "clearance_sigma_rss_mm": round(clearance_sigma, 9),
+            "three_sigma_clearance_mm": {
+                "minimum": round(clearance_mean - k * clearance_sigma, 9),
+                "maximum": round(clearance_mean + k * clearance_sigma, 9),
+            },
+            "probability_of_interference": probability_interference,
+            "probability_of_clearance": probability_clearance,
+        },
+        "gdt_scope": (
+            "Size-limit and one-dimensional clearance analysis only. Position, "
+            "orientation, form, datum reference frames, cylindricity, runout, "
+            "material condition modifiers, thermal effects and surface finish "
+            "are not evaluated."
+        ),
+    }
