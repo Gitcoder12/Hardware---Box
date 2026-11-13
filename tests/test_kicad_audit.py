@@ -69,10 +69,7 @@ class KiCadAuditTests(unittest.TestCase):
 
 
 
-if __name__ == '__main__':
-    unittest.main()
-
-def test_reports_netlist_component_missing_from_bom(self):
+    def test_reports_netlist_component_missing_from_bom(self):
         with tempfile.TemporaryDirectory() as tmp:
             bom = self._write(tmp, "bom.csv", "References,Value\nR1,10k\n")
             netlist = self._write(
@@ -100,3 +97,7 @@ def test_reports_netlist_component_missing_from_bom(self):
             netlist = self._write(tmp, "bad.net", "<export><components></export>")
             with self.assertRaisesRegex(ValueError, "Invalid KiCad XML netlist"):
                 audit_kicad_exports(bom, netlist)
+
+
+if __name__ == '__main__':
+    unittest.main()
