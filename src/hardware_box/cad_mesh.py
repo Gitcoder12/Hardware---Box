@@ -44,26 +44,87 @@ def _stl_triangles(path: Path) -> tuple[str, Iterable[tuple[tuple[float, float, 
                 )
 
     def ascii_iter():
+        """Parse the ASCII STL facet grammar; never trust stray vertex lines."""
         pending = []
+        state = "start"
+        triangle_count = 0
         try:
             with path.open("r", encoding="utf-8", errors="strict") as source:
                 for line_number, line in enumerate(source, start=1):
                     parts = line.strip().split()
-                    if len(parts) == 4 and parts[0].lower() == "vertex":
+                    if not parts:
+                        continue
+                    tag = parts[0].lower()
+
+                    if state == "start":
+                        if tag != "solid":
+                            raise ValueError("ASCII STL must begin with a solid declaration")
+                        state = "solid"
+                        continue
+
+                    if state == "solid":
+                        if tag == "endsolid":
+                            state = "ended"
+                            continue
+                        if tag != "facet" or len(parts) != 5:
+                            raise ValueError(f"Expected facet normal at line {line_number}")
+                        try:
+                            normal = tuple(float(value) for value in parts[2:])
+                        except ValueError as exc:
+                            raise ValueError(f"Invalid facet normal at line {line_number}") from exc
+                        if not _finite_point(normal):
+                            raise ValueError(f"Non-finite facet normal at line {line_number}")
+                        state = "facet"
+                        continue
+
+                    if state == "facet":
+                        if parts != ["outer", "loop"]:
+                            raise ValueError(f"Expected outer loop at line {line_number}")
+                        state = "loop"
+                        continue
+
+                    if state == "loop":
+                        if tag != "vertex" or len(parts) != 4:
+                            raise ValueError(f"Expected vertex at line {line_number}")
                         try:
                             point = tuple(float(value) for value in parts[1:])
                         except ValueError as exc:
                             raise ValueError(f"Invalid STL vertex at line {line_number}") from exc
-                        if len(point) != 3 or not _finite_point(point):
-                            raise ValueError(f"Non-finite or malformed STL vertex at line {line_number}")
+                        if not _finite_point(point):
+                            raise ValueError(f"Non-finite STL vertex at line {line_number}")
                         pending.append(point)
+                        if len(pending) > 3:
+                            raise ValueError(f"Facet has more than three vertices at line {line_number}")
                         if len(pending) == 3:
-                            yield tuple(pending)
-                            pending.clear()
+                            state = "vertices_complete"
+                        continue
+
+                    if state == "vertices_complete":
+                        if tag != "endloop":
+                            raise ValueError(f"Expected endloop at line {line_number}")
+                        state = "endloop"
+                        continue
+
+                    if state == "endloop":
+                        if tag != "endfacet":
+                            raise ValueError(f"Expected endfacet at line {line_number}")
+                        yield tuple(pending)
+                        pending.clear()
+                        triangle_count += 1
+                        state = "solid"
+                        continue
+
+                    if state == "ended":
+                        raise ValueError(f"Unexpected content after endsolid at line {line_number}")
+
         except UnicodeDecodeError as exc:
             raise ValueError("STL is neither a valid binary STL nor UTF-8 ASCII STL") from exc
-        if pending:
-            raise ValueError("ASCII STL has an incomplete triangle (vertex count is not divisible by 3)")
+
+        if state != "ended":
+            raise ValueError("ASCII STL is incomplete or missing endsolid")
+        if triangle_count == 0:
+            raise ValueError("ASCII STL contains no complete facets")
+
     return "ascii", ascii_iter()
 
 
