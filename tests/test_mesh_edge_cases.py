@@ -45,3 +45,45 @@ def test_counts_degenerate_triangles(tmp_path):
     report = analyze_mesh(path)
     assert report["manifold_errors"]["degenerate_triangles"] == 1
     assert report["volume"] is None
+
+def test_reversed_duplicate_face_is_not_reported_as_watertight(tmp_path):
+    triangle = ((0.0, 0.0, 0.0), (1.0, 0.0, 0.0), (0.0, 1.0, 0.0))
+    reversed_triangle = (triangle[0], triangle[2], triangle[1])
+    path = tmp_path / "duplicate-opposite-faces.stl"
+    _write_binary_stl(path, [triangle, reversed_triangle])
+    report = analyze_mesh(path)
+    assert report["manifold_errors"]["duplicate_triangles"] == 1
+    assert report["manifold_error_count"] >= 1
+    assert report["topology"]["watertight_by_edge_incidence"] is False
+    assert report["volume"] is None
+
+
+def test_rejects_non_utf8_ascii_stl_with_clear_error(tmp_path):
+    path = tmp_path / "invalid-ascii.stl"
+    path.write_bytes(b"solid malformed\n\xff\n")
+    with pytest.raises(ValueError, match="neither a valid binary STL nor UTF-8 ASCII STL"):
+        analyze_mesh(path)
+
+
+def test_rejects_corrupted_3mf_zip(tmp_path):
+    path = tmp_path / "corrupt.3mf"
+    path.write_bytes(b"not a zip archive")
+    with pytest.raises(ValueError, match="Invalid or corrupted 3MF archive"):
+        analyze_mesh(path)
+
+
+def test_rejects_malformed_3mf_vertex_coordinates(tmp_path):
+    import zipfile
+
+    model = (
+        '<model xmlns="http://schemas.microsoft.com/3dmanufacturing/core/2015/02">'
+        '<resources><object id="1"><mesh><vertices>'
+        '<vertex x="not-a-number" y="0" z="0"/>'
+        '</vertices><triangles><triangle v1="0" v2="0" v3="0"/>'
+        '</triangles></mesh></object></resources></model>'
+    )
+    path = tmp_path / "bad-coordinate.3mf"
+    with zipfile.ZipFile(path, "w") as archive:
+        archive.writestr("3D/3dmodel.model", model)
+    with pytest.raises(ValueError, match="missing or invalid coordinates"):
+        analyze_mesh(path)
