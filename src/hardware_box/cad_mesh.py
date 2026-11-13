@@ -38,6 +38,10 @@ def _stl_triangles(path: Path) -> tuple[str, Iterable[tuple[tuple[float, float, 
                                 raise ValueError("STL contains non-finite vertex coordinates")
                             yield triangle
                 return "binary", binary_iter()
+            if not header[:80].lstrip().lower().startswith(b"solid"):
+                raise ValueError(
+                    "Malformed or truncated binary STL: triangle count does not match file size"
+                )
 
     def ascii_iter():
         pending = []
