@@ -57,3 +57,12 @@ def test_statistical_model_reports_asymmetric_tolerance_shift():
     assert stats["hole_process_mean_mm"] == pytest.approx(10.01)
     assert stats["shaft_process_mean_mm"] == pytest.approx(9.89)
     assert stats["clearance_mean_mm"] == pytest.approx(0.12)
+
+def test_fit_interval_name_reflects_custom_sigma_multiplier():
+    result = analyze_shaft_hole_fit(
+        {"nominal": 10.1, "tolerance_plus": 0.03, "tolerance_minus": 0.03},
+        {"nominal": 10.0, "tolerance_plus": 0.02, "tolerance_minus": 0.02},
+        sigma_multiplier=2.0,
+    )
+    assert "configured_k_sigma_clearance_mm" in result["statistical"]
+    assert "three_sigma_clearance_mm" not in result["statistical"]
