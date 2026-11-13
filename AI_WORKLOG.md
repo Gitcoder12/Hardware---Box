@@ -1,65 +1,54 @@
 # AI Engineering Worklog
 
-## ✅ Work Done
+## Scope
 
-### 2026-11-13 — Deep-dive sprint (deep-dive-sprint)
+Repository: Hardware-Box  
+Branch: `deep-dive-sprint`  
+Date: 2026-11-13
 
-The following engineering work is present on this branch; some changes were developed in parallel by another connected AI model and were reviewed for consistency before being retained.
+## Confirmed work in the current engineering PR
 
-- Retained the existing pure-Python STL/3MF triangle-mesh analysis: surface area, single-shell signed volume, edge incidence, boundary/non-manifold/orientation checks, bounds and degenerate/duplicate triangle reporting.
-- Added an aggregate manifold_errors summary and count.
-- Hardened STL parsing so malformed binary files and non-UTF-8 ASCII candidates return a clear ValueError.
+- Added detailed mesh error counts and safer STL parsing for truncated binary input.
 - Hardened 3MF ZIP/XML parsing and malformed vertex handling.
-- Prevented duplicate coincident faces from being treated as a watertight volume.
-- Added a physical lower-limit check: nominal size minus minus-tolerance must remain positive.
-- Added analyze_shaft_hole_fit with worst-case clearance and an independent normal-process RSS model; exposed it through the CLI statistical fit option.
-- Hardened BOM row conversion: record must contain a components list; each component must be a valid object with non-empty name, positive integer quantity and object specifications.
-- Added tests for BOM edge cases, corrupt KiCad S-expressions/encoding, mesh degeneracies and non-manifold edges, statistical shaft/hole fits, missing BOM/netlist references, and corrupted XML exports.
+- Added deterministic worst-case tolerance-stack and hole/shaft clearance calculations.
+- Added an explicitly assumed statistical hole/shaft model using normal distributions and independent-process RSS.
+- Added BOM record validation and clearer handling of malformed KiCad input.
+- Added regression coverage and documented formulas, assumptions, and non-GD&T limitations in README.md.
 
-## 🚧 Work Left
+## Nine-gate assessment
 
-- Run the complete Hardware-Box test suite and Streamlit smoke workflow in GitHub Actions; no test execution is claimed in this worklog.
-- Confirm every supported Python matrix job passes.
-- Independently test statistical fit calculations against a trusted engineering reference or hand-calculated fixtures.
-- Validate representative STL/3MF files from real CAD tools; current synthetic fixtures validate algorithm behavior only.
-- 3MF component/build transforms are not applied; metrics summarize object mesh definitions, not final transformed assemblies.
-- Mesh edge-incidence checks do not detect every vertex-manifold issue, self-intersection or CAD-kernel/B-rep defect.
-- Tolerance model is one-dimensional. It does not implement full GD&T datum reference frames, position/orientation/form tolerances, material-condition modifiers, thermal distortion, roughness or process capability.
-- RSS probability assumes independent normal processes. Validate distribution assumptions using measured production data before using probabilities for decisions.
-- KiCad parsing/audit remains read-only structural inspection; full ERC and DRC require KiCad CLI and project-specific configuration.
-- Conduct independent review of the actual PR diff; not performed by this agent.
+| Gate | Assessment | Evidence / next work |
+|---|---|---|
+| Architecture | Good modular toolkit | CAD mesh, tolerance, BOM, KiCad and app surfaces are separated |
+| Correctness | Improved | Worst-case and statistical formulas have dedicated tests; expand property-based and reference-case tests |
+| Tests | Passed | Python 3.10–3.13 matrix and Streamlit smoke check passed on exact PR head `7fe54fe6546c053c81c7d74ef7d6121f5470deea` |
+| Error handling | Improved | Truncated STL and invalid UTF-8 inputs are normalized to clear errors |
+| Security | Review needed | Keep parsing bounded; treat imported CAD/project bundles as untrusted input |
+| Dependencies | Review needed | Monitor CAD/parser dependency updates and optional native tools |
+| Performance | Review needed | Benchmark large STL/3MF files and constrain memory for untrusted uploads |
+| Documentation | Improved | README explains worst-case, RSS, statistical assumptions and limitations |
+| CI/release | Passed at verified head | Python matrix and Streamlit smoke checks completed successfully; rerun after any further code change |
 
-## 📊 Current Health
+## Engineering model limits
 
-- Tests: New edge-case tests added; execution status NOT RUN in this connected GitHub-only session.
-- Coverage: Not measured.
-- CI: Main contains separate Python test-matrix and Streamlit smoke workflows; PR run must be checked.
-- Lint: No verified lint result for this branch.
-- Security audit: Focused archive/file parsing hardening inspected; no full security audit executed.
-- Build: NOT RUN locally.
-- Independent review: NOT PERFORMED.
+- Tolerance-stack calculations are one-dimensional algebraic models.
+- RSS assumes independent contributors and is not a worst-case guarantee.
+- The statistical fit model assumes independent normal hole and shaft processes with the configured sigma multiplier.
+- The fit calculation is size-only; it does not certify GD&T, geometric form, datum relationships, thermal effects, or manufacturing capability.
+- STL unit metadata may be unspecified; 3MF object/build transforms are not applied by the mesh analyzer.
+- Mesh inspection is not a substitute for full CAD-kernel validation or manufacturing sign-off.
 
-## 🧱 Architecture and Engineering Risks
+## Validation evidence
 
-- STL unit metadata is not reliably encoded; users must provide known units when required.
-- 3MF object/build transforms and multi-object assembly placement are not applied to the reported mesh metrics.
-- Volume is reported only for a single closed, consistently oriented, non-degenerate, duplicate-free shell.
-- Statistical tolerance outputs are model-based estimates, not measured process capability or a GD&T conformance result.
-- BOM and KiCad reference mismatches may be intentional due to DNP/BOM exclusions or hierarchy; findings require design review.
+- Latest verified PR head at time of writing: `7fe54fe6546c053c81c7d74ef7d6121f5470deea`.
+- Python 3.10, 3.11, 3.12, and 3.13 pytest jobs: passed.
+- Streamlit app smoke check: passed.
+- The workflow also compiled source/tests, validated example records, and checked CLI entry points.
+- A malformed test function in the new KiCad tests was found by CI and corrected before the successful run.
 
-## 🔐 Security Findings
+## Next actions
 
-- Fixed on branch: malformed STL/3MF data is rejected with clearer input errors; duplicate faces cannot yield a misleading watertight volume result.
-- Fixed on branch: malformed BOM component records are rejected with actionable validation errors.
-- Fixed on branch: malformed native KiCad expressions and invalid UTF-8 are covered by regression tests.
-- Remaining: broader archive-bomb/resource-limit testing, parser fuzzing and dependency review.
-
-## 🔍 Verification
-
-- Inspected README, package metadata, CI workflows, mesh analyzer, tolerance stack, BOM normalization, KiCad CSV/XML/native parser and audit, associated tests and CLI integration via the connected GitHub file interface.
-- Checks actually executed: GitHub branch comparison and repository file retrieval only.
-- pytest: NOT RUN.
-- Build/package install: NOT RUN.
-- Streamlit smoke test: NOT RUN.
-- CI result for this branch: Not yet verified.
-- Next step: open a review PR, inspect all Python matrix and Streamlit smoke results, then address failures before merge.
+1. Add reference examples with independently calculated expected outputs for tolerance and fit calculations.
+2. Add bounded-input tests for very large and malformed mesh/project files.
+3. Benchmark representative STL/3MF files from real CAD tools.
+4. Keep the UI and docs explicit that outputs are advisory engineering analysis.
