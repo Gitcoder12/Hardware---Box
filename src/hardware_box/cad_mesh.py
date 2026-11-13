@@ -190,6 +190,13 @@ def _analyze_triangles(triangles: Iterable[tuple[tuple[float, float, float], ...
     # Do not sum disconnected shells: separate shell winding can cancel or represent cavities.
     volume = abs(next(iter(component_totals.values()))) if (watertight and consistently_oriented and connected_components == 1) else None
 
+    manifold_errors = {
+        "boundary_edges": boundary_edges,
+        "non_manifold_edges": non_manifold_edges,
+        "inconsistent_orientation_edges": inconsistent_edges,
+        "degenerate_triangles": degenerate_count,
+        "duplicate_triangles": duplicate_faces,
+    }
     return {
         "format": source_format,
         "triangle_count": triangle_count,
@@ -202,6 +209,8 @@ def _analyze_triangles(triangles: Iterable[tuple[tuple[float, float, float], ...
         "surface_area": round(surface_area, 9),
         "volume": round(volume, 9) if volume is not None else None,
         "volume_status": "computed_for_single_closed_consistently_oriented_shell" if volume is not None else "not_computed_mesh_not_closed_or_oriented_or_has_multiple_shells",
+        "manifold_errors": manifold_errors,
+        "manifold_error_count": sum(manifold_errors.values()),
         "topology": {
             "watertight_by_edge_incidence": watertight,
             "consistently_oriented_by_edge_direction": consistently_oriented,
