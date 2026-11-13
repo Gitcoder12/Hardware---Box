@@ -1,108 +1,148 @@
-# Hardware-Box
+Hardware-Box
 
-An open-source workbench for inspecting hardware records, CAD meshes, PCB designs and engineering tolerances.
+Universal Hardware Configuration, Cloning & Replication Platform
 
-[![License: Apache-2.0](https://img.shields.io/badge/License-Apache--2.0-blue.svg)](LICENSE)
-[![Python](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/)
-[![CI](https://github.com/Gitcoder12/Hardware-Box/actions/workflows/tests.yml/badge.svg)](https://github.com/Gitcoder12/Hardware-Box/actions/workflows/tests.yml)
+A comprehensive library of hardware and PCB configurations, with cloning, duplication, and replication capabilities using 3D printers and other suitable manufacturing technologies.
 
-## Workspaces
+---
 
-- Device registry, validation and design-readiness review
-- STL / 3MF mesh inspection
-- Worst-case and RSS tolerance stacks; hole / shaft fits
-- Native KiCad schematic, PCB, BOM and netlist inspection
-- ERC / DRC report review
-- Project-bundle integrity verification
+Overview
 
-The app performs read-only analysis. Results are advisory and do not replace CAD-kernel validation, simulation, ERC/DRC or manufacturing sign-off.
+Hardware-Box aims to create a centralized ecosystem for documenting, analyzing, reconstructing, and replicating physical hardware.
 
-## Run the app
+The platform will organize hardware configurations, PCB layouts, electronic components, mechanical structures, CAD models, firmware documentation, and manufacturing specifications.
 
-```bash
-python -m venv .venv
-# Windows: .venv\\Scripts\\activate
-# macOS / Linux: source .venv/bin/activate
-pip install -r requirements.txt
-streamlit run streamlit_app.py
-```
+The long-term vision is to make hardware designs easier to understand, reproduce, modify, and manufacture.
 
-## Install the Python toolkit
+Core Capabilities
 
-```bash
-pip install -e .
-hardware-box --help
-```
+- Hardware Database: Organized configurations for phones, televisions, computers, appliances, and electronic devices.
+- PCB Library: Circuit board layouts, schematics, component placements, and board specifications.
+- Hardware Cloning: Reconstruct compatible hardware designs from verified documentation and authorized reference devices.
+- 3D Replication: Generate and reproduce compatible physical components using 3D printing.
+- CAD Integration: Store and process STEP, STL, 3MF, and other supported design formats.
+- Component Library: Catalog electronic and mechanical components with specifications.
+- Manufacturing Support: Document suitable fabrication technologies, materials, tolerances, and assembly procedures.
+- Compatibility Analysis: Compare hardware configurations and identify compatible replacement components.
 
-## Run tests
+Supported Hardware Categories
 
-```bash
-pip install -e ".[dev]"
-pytest tests/ -q
-```
+Category| Examples
+Mobile Devices| Smartphones, tablets
+Entertainment| Televisions, remotes, speakers
+Computing| Laptops, desktops, accessories
+Electronics| PCBs, embedded systems, controllers
+Mechanical| Enclosures, brackets, connectors
+Appliances| Electronic and mechanical components
 
-## Project layout
+Replication Technologies
 
-```text
+- FDM / FFF 3D printing
+- SLA / Resin printing
+- SLS printing
+- CNC machining
+- PCB manufacturing
+- Laser cutting
+- Other suitable fabrication technologies
+
+Not every component can be reproduced using 3D printing. Electronic chips, displays, sensors, and specialized components may require separate manufacturing or sourcing.
+
+Planned Architecture
+
 Hardware-Box/
-├── src/hardware_box/    # Python core and CLI
-├── tests/               # 21 automated test modules
-├── streamlit_app.py     # Streamlit Cloud entry point
-├── examples/            # Sample hardware and engineering files
-├── database/            # Device schemas and records
-├── docs/                # Architecture and engineering notes
-└── .github/workflows/   # CI and app smoke checks
-```
+│
+├── database/
+│   ├── devices/
+│   ├── configurations/
+│   └── manufacturers/
+│
+├── pcb/
+│   ├── layouts/
+│   ├── schematics/
+│   └── components/
+│
+├── designs/
+│   ├── cad/
+│   ├── 3d-models/
+│   └── mechanical/
+│
+├── fabrication/
+│   ├── materials/
+│   ├── printers/
+│   └── manufacturing/
+│
+├── tools/
+│   ├── analyzers/
+│   ├── converters/
+│   └── validators/
+│
+├── docs/
+├── examples/
+└── tests/
 
-## Deploy a public demo
+Technology Direction
 
-On [Streamlit Community Cloud](https://share.streamlit.io/), create an app using repository `Gitcoder12/Hardware-Box`, branch `main`, and entry point `streamlit_app.py`. The public URL is generated after deployment.
+- Python for automation and hardware processing
+- JSON for structured device configurations
+- KiCad for PCB design and documentation
+- FreeCAD for parametric CAD workflows
+- Open-source 3D printing and manufacturing tools
+- Future web interface for browsing and managing hardware designs
 
-## Engineering models and assumptions
+Development Roadmap
 
-Hardware-Box reports deterministic size limits separately from statistical process estimates.
+- [ ] Establish repository architecture
+- [ ] Define universal hardware configuration schema
+- [ ] Build device and component database
+- [ ] Support PCB design documentation
+- [ ] Integrate CAD model storage and validation
+- [ ] Develop hardware comparison tools
+- [ ] Build 3D model preparation workflows
+- [ ] Introduce replication and fabrication pipelines
+- [ ] Develop a searchable hardware catalog
+- [ ] Build a unified web interface
 
-### One-dimensional tolerance stacks
+Design Principles
 
-For a linear stack with nominal dimensions (d_i) and signed coefficients (c_i):
+- Open documentation and interoperability
+- Reproducible and verifiable configurations
+- Modular and extensible architecture
+- Accurate technical specifications
+- Responsible and authorized hardware replication
+- Respect for intellectual property and device security
 
-```text
-Nominal stack = Σ(cᵢ × dᵢ)
-Worst-case upper/lower deviations = sum of the corresponding absolute tolerance contributions
-RSS upper/lower deviations = sqrt(Σ(contributionᵢ²))
-```
+Project Status
 
-For a negative stack coefficient, the plus/minus tolerance contributions are swapped. RSS is an estimate under the assumption that contributors are statistically independent; it is not a worst-case guarantee.
+Early Development — Architecture and Planning
 
-### Hole-and-shaft clearance
+Hardware-Box is currently in its initial planning stage. Features and integrations will be implemented incrementally.
 
-The deterministic limits are:
+Contributing
 
-```text
-Minimum clearance = minimum hole size − maximum shaft size
-Maximum clearance = maximum hole size − minimum shaft size
-```
+Contributions involving hardware documentation, open designs, component specifications, CAD models, PCB layouts, and manufacturing workflows are welcome.
 
-The reported worst-case fit is clearance when the minimum clearance is non-negative, interference when the maximum clearance is negative, and transition otherwise.
+All submitted assets must have appropriate licensing and provenance information.
 
-### Optional statistical fit estimate
+License
 
-The `fit-check --statistical` mode models each size as a normal process distribution. For a configured (k)-sigma limit:
+Software is licensed under Apache License 2.0.
 
-```text
-Process mean = nominal + (upper tolerance − lower tolerance) / 2
-Process sigma = (upper tolerance + lower tolerance) / (2k)
-Clearance sigma = sqrt(hole sigma² + shaft sigma²)
-P(interference) = Φ(−clearance mean / clearance sigma)
-```
+Individual hardware designs, CAD assets, and documentation may use separate explicitly stated licenses.
 
-The default is (k=3). The model assumes independent hole and shaft processes and reports the assumed distribution and sigma multiplier with the result. It is a statistical estimate, not a guaranteed production yield or a substitute for measured process capability.
+---
 
-### Scope and limitations
+Hardware-Box
 
-These calculations are one-dimensional and size-only. They do not evaluate GD&T position/orientation, form, datum reference frames, cylindricity, runout, surface finish, thermal expansion, material deformation, coatings, alignment, assembly force, or a complete CAD tolerance analysis. STL units may be unspecified; 3MF object/build transforms are not applied by the mesh analyzer. Treat all output as engineering decision support and obtain appropriate CAD, simulation, metrology, and manufacturing review before releasing a design.
+Document. Analyze. Reconstruct. Replicate. Manufacture.
 
+---
 
-## License
+## AI-maintained project notes (secondary — 2026-11-13)
 
-Apache-2.0. See [LICENSE](LICENSE).
+This section supplements the maintainer-authored README above. The original text has been restored verbatim from Git-history baseline `46f34793b14171dbe76eea0be68a4bfb9a891d74`; this addendum does not replace or certify the original claims.
+
+- The current source tree, runtime data and tests are the implementation source of truth. Roadmap items, draft PRs and AI-generated descriptions are not shipped features by themselves.
+- Preserve real and maintainer-provided data. Never silently substitute generated or placeholder data. Clearly label and isolate synthetic fixtures.
+- Mark unverified sources, identifiers, metrics, benchmark results and external claims as unknown/unverified rather than guessing.
+- Verify setup, execution, tests and public claims against the exact current commit before using this repository in a job, research or academic application.
+- See [MODEL_AUDIT_ROUTER.md](MODEL_AUDIT_ROUTER.md) for independent model review instructions and the merge gate.
