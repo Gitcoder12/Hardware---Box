@@ -58,11 +58,6 @@ Hardware-Box/
 
 On [Streamlit Community Cloud](https://share.streamlit.io/), create an app using repository `Gitcoder12/Hardware-Box`, branch `main`, and entry point `streamlit_app.py`. The public URL is generated after deployment.
 
-## License
-
-Apache-2.0. See [LICENSE](LICENSE).
-
-
 ## Engineering models and assumptions
 
 Hardware-Box reports deterministic size limits separately from statistical process estimates.
@@ -106,3 +101,8 @@ The default is (k=3). The model assumes independent hole and shaft processes and
 ### Scope and limitations
 
 These calculations are one-dimensional and size-only. They do not evaluate GD&T position/orientation, form, datum reference frames, cylindricity, runout, surface finish, thermal expansion, material deformation, coatings, alignment, assembly force, or a complete CAD tolerance analysis. STL units may be unspecified; 3MF object/build transforms are not applied by the mesh analyzer. Treat all output as engineering decision support and obtain appropriate CAD, simulation, metrology, and manufacturing review before releasing a design.
+
+
+## License
+
+Apache-2.0. See [LICENSE](LICENSE).
