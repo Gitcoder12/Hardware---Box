@@ -61,3 +61,48 @@ On [Streamlit Community Cloud](https://share.streamlit.io/), create an app using
 ## License
 
 Apache-2.0. See [LICENSE](LICENSE).
+
+
+## Engineering models and assumptions
+
+Hardware-Box reports deterministic size limits separately from statistical process estimates.
+
+### One-dimensional tolerance stacks
+
+For a linear stack with nominal dimensions (d_i) and signed coefficients (c_i):
+
+```text
+Nominal stack = Σ(cᵢ × dᵢ)
+Worst-case upper/lower deviations = sum of the corresponding absolute tolerance contributions
+RSS upper/lower deviations = sqrt(Σ(contributionᵢ²))
+```
+
+For a negative stack coefficient, the plus/minus tolerance contributions are swapped. RSS is an estimate under the assumption that contributors are statistically independent; it is not a worst-case guarantee.
+
+### Hole-and-shaft clearance
+
+The deterministic limits are:
+
+```text
+Minimum clearance = minimum hole size − maximum shaft size
+Maximum clearance = maximum hole size − minimum shaft size
+```
+
+The reported worst-case fit is clearance when the minimum clearance is non-negative, interference when the maximum clearance is negative, and transition otherwise.
+
+### Optional statistical fit estimate
+
+The `fit-check --statistical` mode models each size as a normal process distribution. For a configured (k)-sigma limit:
+
+```text
+Process mean = nominal + (upper tolerance − lower tolerance) / 2
+Process sigma = (upper tolerance + lower tolerance) / (2k)
+Clearance sigma = sqrt(hole sigma² + shaft sigma²)
+P(interference) = Φ(−clearance mean / clearance sigma)
+```
+
+The default is (k=3). The model assumes independent hole and shaft processes and reports the assumed distribution and sigma multiplier with the result. It is a statistical estimate, not a guaranteed production yield or a substitute for measured process capability.
+
+### Scope and limitations
+
+These calculations are one-dimensional and size-only. They do not evaluate GD&T position/orientation, form, datum reference frames, cylindricity, runout, surface finish, thermal expansion, material deformation, coatings, alignment, assembly force, or a complete CAD tolerance analysis. STL units may be unspecified; 3MF object/build transforms are not applied by the mesh analyzer. Treat all output as engineering decision support and obtain appropriate CAD, simulation, metrology, and manufacturing review before releasing a design.
