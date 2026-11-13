@@ -87,3 +87,33 @@ def test_rejects_malformed_3mf_vertex_coordinates(tmp_path):
         archive.writestr("3D/3dmodel.model", model)
     with pytest.raises(ValueError, match="missing or invalid coordinates"):
         analyze_mesh(path)
+
+def test_ascii_stl_requires_complete_facet_grammar(tmp_path):
+    content = """solid tetra
+facet normal 0 0 1
+outer loop
+vertex 0 0 0
+vertex 1 0 0
+vertex 0 1 0
+endloop
+endfacet
+endsolid tetra
+"""
+    path = tmp_path / "valid-ascii.stl"
+    path.write_text(content, encoding="utf-8")
+    report = analyze_mesh(path)
+    assert report["encoding"] == "ascii"
+    assert report["triangle_count"] == 1
+    assert report["surface_area"] == pytest.approx(0.5)
+
+
+def test_solid_prefixed_truncated_binary_is_not_parsed_from_stray_vertices(tmp_path):
+    header = b"solid deceptive-binary".ljust(80, b" ")
+    payload = (
+        b"\x01\x00\x00\x00\n"
+        b"vertex 0 0 0\nvertex 1 0 0\nvertex 0 1 0\n"
+    )
+    path = tmp_path / "solid-prefixed-truncated.stl"
+    path.write_bytes(header + payload)
+    with pytest.raises(ValueError, match="Expected facet normal"):
+        analyze_mesh(path)
