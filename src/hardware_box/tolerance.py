@@ -197,7 +197,7 @@ def analyze_shaft_hole_fit(
             "hole_sigma_mm": round(hole_sigma, 9),
             "shaft_sigma_mm": round(shaft_sigma, 9),
             "clearance_sigma_rss_mm": round(clearance_sigma, 9),
-            "three_sigma_clearance_mm": {
+            "configured_k_sigma_clearance_mm": {
                 "minimum": round(clearance_mean - k * clearance_sigma, 9),
                 "maximum": round(clearance_mean + k * clearance_sigma, 9),
             },
