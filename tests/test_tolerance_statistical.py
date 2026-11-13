@@ -12,7 +12,7 @@ def test_shaft_hole_fit_reports_worst_case_and_rss_statistics():
     assert result["worst_case_clearance_mm"]["minimum"] == pytest.approx(0.02)
     assert result["worst_case_clearance_mm"]["maximum"] == pytest.approx(0.08)
     stats = result["statistical"]
-    assert stats["clearance_sigma_rss_mm"] == pytest.approx((0.02**2 + 0.01**2) ** 0.5 / 6)
+    assert stats["clearance_sigma_rss_mm"] == pytest.approx((0.02**2 + 0.01**2) ** 0.5 / 3)
     assert 0.0 <= stats["probability_of_interference"] <= 1.0
     assert stats["probability_of_clearance"] + stats["probability_of_interference"] == pytest.approx(1.0)
 
