@@ -26,7 +26,7 @@ from .design_review import review_design
 from .eda_reports import inspect_kicad_report, audit_design_reports
 from .kicad_checks import run_kicad_checks
 from .cad_mesh import analyze_mesh
-from .tolerance import analyze_tolerance_stack, analyze_clearance_fit
+from .tolerance import analyze_tolerance_stack, analyze_clearance_fit, analyze_shaft_hole_fit
 
 
 def _read(path: str | Path):
@@ -59,7 +59,7 @@ def main(argv=None):
     p = sub.add_parser("inspect-cad", help="Inspect STL, 3MF or STEP metadata"); p.add_argument("file")
     p = sub.add_parser("analyze-mesh", help="Analyze STL/3MF mesh topology, area and volume"); p.add_argument("file"); p.add_argument("--units"); p.add_argument("--weld-tolerance", type=float, default=1e-7); p.add_argument("--output")
     p = sub.add_parser("tolerance-stack", help="Analyze a unit-aware 1D tolerance stack from JSON"); p.add_argument("file"); p.add_argument("--output")
-    p = sub.add_parser("fit-check", help="Analyze hole/shaft limit clearance from JSON"); p.add_argument("file"); p.add_argument("--output")
+    p = sub.add_parser("fit-check", help="Analyze hole/shaft fit from JSON"); p.add_argument("file"); p.add_argument("--output"); p.add_argument("--statistical", action="store_true", help="Include normal-process RSS interference probability"); p.add_argument("--sigma-multiplier", type=float, default=3.0)
     p = sub.add_parser("suggest-fabrication", help="Suggest possible processes from CAD metadata"); p.add_argument("file")
     p = sub.add_parser("export-bom", help="Export a device BOM to CSV"); p.add_argument("id"); p.add_argument("--output", default="bom.csv")
     p = sub.add_parser("review", help="Run design documentation readiness checks"); p.add_argument("id")
@@ -129,7 +129,7 @@ def main(argv=None):
             else: print(json.dumps(result, indent=2))
         elif args.command == "fit-check":
             payload = _read(args.file)
-            result = analyze_clearance_fit(payload.get("hole"), payload.get("shaft"), payload.get("default_unit", "mm"))
+            result = (analyze_shaft_hole_fit(payload.get("hole"), payload.get("shaft"), payload.get("default_unit", "mm"), sigma_multiplier=args.sigma_multiplier) if args.statistical else analyze_clearance_fit(payload.get("hole"), payload.get("shaft"), payload.get("default_unit", "mm")))
             if args.output: print("EXPORTED:", _write_json(result, args.output))
             else: print(json.dumps(result, indent=2))
         elif args.command == "suggest-fabrication":
