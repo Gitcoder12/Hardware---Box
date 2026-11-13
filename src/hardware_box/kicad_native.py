@@ -404,7 +404,10 @@ def inspect_kicad_native(path: str | Path) -> dict[str, Any]:
     size = source.stat().st_size
     if size > _MAX_FILE_BYTES:
         raise ValueError(f'KiCad file is too large ({size:,} bytes; limit {_MAX_FILE_BYTES:,})')
-    text = source.read_text(encoding='utf-8')
+    try:
+        text = source.read_text(encoding='utf-8')
+    except UnicodeDecodeError as exc:
+        raise ValueError(f'KiCad file is not valid UTF-8: {source.name}') from exc
     root = parse_sexpr(text)
     expected = 'kicad_sch' if source.suffix.lower() == '.kicad_sch' else 'kicad_pcb'
     if _head(root) != expected:
