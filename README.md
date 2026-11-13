@@ -119,3 +119,15 @@ Apache-2.0. See [LICENSE](LICENSE).
 - [Contribution guide](CONTRIBUTING.md)
 - [Agent instructions](AGENTS.md)
 - [Agent skill map](SKILLS.md)
+
+## Understanding the project
+
+### In plain language
+
+A toolkit that inspects engineering files such as CAD meshes and PCB records, checks their structure and reports possible design issues.
+
+### Technical and research view
+
+Document the actual architecture, module boundaries, input formats, transformations, outputs, dependencies and failure behavior. Do not describe proposed components as implemented.
+
+For future work, see [FEATURE_UPGRADE_PLAN.md](FEATURE_UPGRADE_PLAN.md), [ACTIVITY_LOG.md](ACTIVITY_LOG.md), [COMPANY_FIT.md](COMPANY_FIT.md) and [CONTRIBUTING.md](CONTRIBUTING.md).
