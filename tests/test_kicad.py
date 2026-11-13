@@ -26,3 +26,10 @@ class KiCadTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             p = Path(tmp) / 'bad.net'; p.write_text('<broken>')
             with self.assertRaises(ValueError): inspect_kicad_netlist(p)
+
+def test_bom_rejects_csv_without_component_identity_column(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            p = Path(tmp) / "bad-header.csv"
+            p.write_text("Ref,Qty\nR1,1\n", encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "Could not identify"):
+                parse_kicad_bom_csv(p)
